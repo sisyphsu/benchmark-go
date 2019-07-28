@@ -8,12 +8,12 @@ import (
 	"testing"
 )
 
-const count = 1024
+const count = 64
 
-var items = make([]item, count)
+var items = make([]*item, count)
 var itemHash = make([]int, count)
 var itemHashIndex = make([]int, count)
-var itemMap = make(map[string]item)
+var itemMap = make(map[string]*item)
 
 type intarray []int
 
@@ -42,8 +42,8 @@ func init() {
 		name := fmt.Sprintf("%16d", i)
 		score := rand.Float64()
 		item := item{name, score}
-		itemMap[name] = item
-		items[i] = item
+		itemMap[name] = &item
+		items[i] = &item
 		itemHash[i] = hashcode(name)
 	}
 	sort.Sort(intarray(itemHash))
@@ -73,7 +73,7 @@ func binarySearch(arr []int, val int) int {
 
 func getByMap(name string) *item {
 	item := itemMap[name]
-	return &item
+	return item
 }
 
 func getByIndex(name string) *item {
@@ -85,8 +85,7 @@ func getByIndex(name string) *item {
 	if i < 0 || i >= len(items) {
 		return nil
 	}
-	item := items[i]
-	return &item
+	return items[i]
 }
 
 func TestSearch(t *testing.T) {
@@ -99,17 +98,17 @@ func TestSearch(t *testing.T) {
 }
 
 /**
-count=64
-BenchmarkBinarySearch-12          200000              7610 ns/op            3072 B/op        128 allocs/op
-BenchmarkMapSearch-12            2000000               675 ns/op               0 B/op          0 allocs/op
+数据量为64
+BenchmarkBinarySearch-12          300000              4157 ns/op            1024 B/op         64 allocs/op
+BenchmarkMapSearch-12            2000000               745 ns/op               0 B/op          0 allocs/op
 
-count=256
-BenchmarkBinarySearch-12           50000             33588 ns/op           12288 B/op        512 allocs/op
-BenchmarkMapSearch-12             500000              2998 ns/op               0 B/op          0 allocs/op
+数据量为256
+BenchmarkBinarySearch-12          100000             23523 ns/op            4096 B/op        256 allocs/op
+BenchmarkMapSearch-12             500000              3511 ns/op               0 B/op          0 allocs/op
 
-count=1024
-BenchmarkBinarySearch-12           10000            149420 ns/op           49152 B/op       2048 allocs/op
-BenchmarkMapSearch-12             100000             20039 ns/op               0 B/op          0 allocs/op
+数据量为1024
+BenchmarkBinarySearch-12           10000            116149 ns/op           16384 B/op       1024 allocs/op
+BenchmarkMapSearch-12             100000             20021 ns/op               0 B/op          0 allocs/op
 */
 
 func BenchmarkBinarySearch(b *testing.B) {
